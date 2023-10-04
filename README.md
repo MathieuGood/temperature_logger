@@ -7,7 +7,7 @@
 
 This is a script I wrote to log the temperature and humidity data from my Switchbot sensors.
 
-It is using the Switchbot API to get the data from all the sensors (Outdoor Meter and Hub2) and logging it into a csv file.
+It is using the Switchbot API to get the data from all the sensors (Outdoor Meter and Hub2) and logging it into a csv file every n seconds.
 
 The CSV file looks like this 
 ```csv
@@ -17,4 +17,19 @@ The CSV file looks like this
 2023-10-03 23:42:52.255775,Kitchen,22.8,59
 ```
 
-[Switchbot API Github Documentation](https://github.com/OpenWonderLabs/SwitchBotAPI)
+## Starting the script
+
+First, fill in your credentials in run_temp_logger.sh.
+```bash
+key='your_secret_key'
+token='your_token'
+```
+Instructions to get API key and token are in [Switchbot API Documentation](https://github.com/OpenWonderLabs/SwitchBotAPI)
+
+You can also customize the log file name and the interval in seconds between each API call.
+```bash
+csv_file='temp_log.csv'
+sleep 60
+```
+
+On MacOSX and Linux, run the script with ```./run_temp_logger.sh```
