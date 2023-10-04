@@ -2,13 +2,13 @@
 while true; do
 
     # Secret Key
-    key='key'
+    key='your_secret_key'
 
     # Token
-    token='token'
+    token='your_token'
     
     # CSV file for log
-    csv_file='your_temp_log.csv'
+    csv_file='temp_log.csv'
     
     # Launch program with python interpreter
     python3 switchbot_temp_logger.py $key $token $csv_file
