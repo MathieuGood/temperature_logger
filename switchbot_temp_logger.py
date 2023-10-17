@@ -8,6 +8,7 @@ import uuid
 import requests
 from datetime import datetime
 
+
 def build_header(secret=sys.argv[1], token=sys.argv[2]):
     header = {}
     nonce = uuid.uuid4()
@@ -16,12 +17,12 @@ def build_header(secret=sys.argv[1], token=sys.argv[2]):
     string_to_sign = bytes(string_to_sign, 'utf-8')
     secret = bytes(secret, 'utf-8')
     sign = base64.b64encode(hmac.new(secret, msg=string_to_sign, digestmod=hashlib.sha256).digest())
-    header['Authorization']=token
-    header['Content-Type']='application/json'
-    header['charset']='utf8'
-    header['t']=str(t)
-    header['sign']=str(sign, 'utf-8')
-    header['nonce']=str(nonce)
+    header['Authorization'] = token
+    header['Content-Type'] = 'application/json'
+    header['charset'] = 'utf8'
+    header['t'] = str(t)
+    header['sign'] = str(sign, 'utf-8')
+    header['nonce'] = str(nonce)
     return header
 
 
@@ -41,7 +42,7 @@ def api_request(url, header):
 
 
 def write_log(csv_file, content):
-    with open((csv_file), 'a', newline='') as csv_data:
+    with open(csv_file, 'a', newline='') as csv_data:
         writer = csv.writer(csv_data)
         writer.writerow(content)
  
@@ -71,7 +72,6 @@ def main():
         write_log(sys.argv[3], [timestamp, device[0], device[2], device[3]])
         n += 1
 
-    
 
 if __name__ == '__main__':
     main()
