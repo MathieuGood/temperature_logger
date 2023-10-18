@@ -7,27 +7,26 @@
         <title>Températures</title>
     </head>
     <body>
-        <?php include('get_temp.php'); ?>
         <div class="main">
 
             <div class="temp-block row" id="top-left">
-                <span class='name'><?php echo $name_salon.'<br />'; ?></span>
-                <span class='temp'><?php echo $temp_salon.'°C'; ?></span>
+                <span class='name'>{{ name_salon }}<br></span>
+                <span class='temp'>{{ temp_salon }}<br></span>
             </div>
 
             <div class="temp-block" id="top-right">
-                <span class='name'><?php echo $name_ext.'<br />'; ?></span>
-                <span class='temp'><?php echo $temp_ext.'°C'; ?></span>
+                <span class='name'>{{ name_ext }}<br></span>
+                <span class='temp'>{{ temp_ext }}<br><</span>
             </div>
 
             <div class="temp-block" id="bottom-left">
-                <span class='name'><?php echo $name_cam.'<br />'; ?></span>
-                <span class='temp'><?php echo $temp_cam.'°C'; ?></span>
+                <span class='name'>{{ name_cam }}<br></span>
+                <span class='temp'>{{ temp_cam }}<br><</span>
             </div>
 
             <div class="temp-block" id="bottom-right">
-                <span class='name'><?php echo $name_cl.'<br />'; ?></span>
-                <span class='temp'><?php echo $temp_cl.'°C'; ?></span>
+                <span class='name'>{{ name_cl }}<br></span>
+                <span class='temp'>{{ temp_cl }}<br></span>
             </div>
 
         </div>
