@@ -45,25 +45,19 @@ def write_log(csv_file, content):
     with open(csv_file, 'a', newline='') as csv_data:
         writer = csv.writer(csv_data)
         writer.writerow(content)
- 
 
-def main():
-    device_list_url = "https://api.switch-bot.com/v1.0/devices"
-    device_status_url = "https://api.switch-bot.com/v1.1/devices/"
-    header = build_header()
-    response_devices = api_request(device_list_url, header)
-    
-    # Request devices list and append them to devices[]
+def get_devices(response_devices):
     devices = []
     for device in response_devices['body']['deviceList']:
         devices.append([device['deviceName'], device['deviceId']])
+    return devices
 
-    # Request each device status with deviceId from devices
-    # Add all the temperature data in devices
+def get_devices_status(devices, header):
     timestamp = datetime.now()
     print(f'\n{timestamp}')
     n = 0    
     for device in devices:
+        device_status_url = "https://api.switch-bot.com/v1.1/devices/"
         response = api_request(device_status_url + device[1] + '/status/', header)
         devices[n].append(response['body']['temperature'])
         devices[n].append(response['body']['humidity'])
@@ -71,6 +65,21 @@ def main():
         # write to csv >>>
         write_log(sys.argv[3], [timestamp, device[0], device[2], device[3]])
         n += 1
+    return devices
+
+def main():
+    device_list_url = "https://api.switch-bot.com/v1.0/devices"
+
+    header = build_header()
+
+    response_devices = api_request(device_list_url, header)
+    
+    # Request devices list and append them to devices[]
+    devices = get_devices(response_devices)
+
+    # Request each device status with deviceId from devices
+    # Add all the temperature data in devices
+    get_devices_status(devices, header)
 
 
 if __name__ == '__main__':
