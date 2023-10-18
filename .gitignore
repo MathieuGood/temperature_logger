@@ -1,4 +1,6 @@
+.gitignore
 temp_log.csv
 .DS_Store
 start_temp_logger.sh
 .idea
+__pycache__
