@@ -1,0 +1,26 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta charset="utf-8" />
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" type="text/css" />
+        <title>Espace Django Strasbourg - Salle de spectacle de musiques actuelles</title>
+    </head>
+    <body>
+        <header>
+        <div id="menu" class="top-menu">
+            <div class="menu-icon"><a href="index.php?page=accueil"><img src="images/logo_django.png" alt="Logo Espace Django"></a></div>
+            <div class="menu-item"><a href="index.php?page=accueil">Accueil</a></div> 
+            <div class="menu-item"><a href="index.php?page=evenements">Evénements</a></div> 
+            <div class="menu-item"><a href="index.php?page=contact">Contact</a></div> 
+            <div class="menu-item"><a href="index.php?page=admin">Admin</a></div>
+                <div class="menu-item admin-menu-item"><a href="index.php?page=gestion_evenements">Gestion événements</a></div> 
+                <div class="menu-item admin-menu-item"><a href="index.php?page=gestion_contacts">Gestion contacts</a></div>
+        </div>
+        </header>
+        <h1>Test température</h1>
+        <div id="content">
+         {% block accueil %}{% endblock %}
+        </div>
+    </body>
+</html>
