@@ -46,7 +46,9 @@ def write_log(csv_file, content):
         writer = csv.writer(csv_data)
         writer.writerow(content)
 
-def get_devices(response_devices):
+def get_devices(header):
+    device_list_url = "https://api.switch-bot.com/v1.0/devices"
+    response_devices = api_request(device_list_url, header)
     devices = []
     for device in response_devices['body']['deviceList']:
         devices.append([device['deviceName'], device['deviceId']])
@@ -68,19 +70,14 @@ def get_devices_status(devices, header):
     return devices
 
 def main():
-    device_list_url = "https://api.switch-bot.com/v1.0/devices"
-
     header = build_header()
-
-    response_devices = api_request(device_list_url, header)
     
     # Request devices list and append them to devices[]
-    devices = get_devices(response_devices)
+    devices = get_devices(header)
 
     # Request each device status with deviceId from devices
     # Add all the temperature data in devices
-    get_devices_status(devices, header)
-
+    devices_status = get_devices_status(devices, header)
 
 if __name__ == '__main__':
     main()
