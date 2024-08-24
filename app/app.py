@@ -7,13 +7,14 @@ import uuid
 import requests
 from datetime import datetime
 from flask import Flask, render_template
+from config import Config
 
 app = Flask(__name__)
 
 
 def build_header(
-    secret="1b57d2452e5f1e580dccde5ca5cad922",
-    token="af38398c2ef42575b6d5a85b464a3eabc8066b0c660d2d7981f862be094e6ecf61069abf984c04f9f6d02ee6667d4976",
+    secret=Config.SECRET_KEY,
+    token=Config.TOKEN,
 ):
     header = {}
     nonce = uuid.uuid4()
@@ -59,6 +60,7 @@ def write_log(csv_file, content):
 def get_devices(header):
     device_list_url = "https://api.switch-bot.com/v1.0/devices"
     response_devices = api_request(device_list_url, header)
+    print(response_devices)
     devices = []
     for device in response_devices["body"]["deviceList"]:
         devices.append([device["deviceName"], device["deviceId"]])
@@ -75,6 +77,9 @@ def get_devices_status(devices, header):
         response = api_request(device_status_url + device[1] + "/status/", header)
         temperature = response["body"]["temperature"]
         hygrometry = response["body"]["humidity"]
+        devices[n].append(temperature)
+        devices[n].append(hygrometry)
+
         devices.append([temperature])
         print(device[3], "%  ", device[2], "° ", device[0])
         write_log("temp_log.csv", [timestamp, device[0], device[2], device[3]])

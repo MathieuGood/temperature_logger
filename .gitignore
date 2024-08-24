@@ -1,4 +1,5 @@
 .gitignore
+.env
 temp_log.csv
 .DS_Store
 start_temp_logger.sh
