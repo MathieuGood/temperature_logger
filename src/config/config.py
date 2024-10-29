@@ -11,3 +11,4 @@ class Config:
     SECRET_KEY: str = os.getenv("SECRET_KEY")
     TOKEN: str = os.getenv("TOKEN")
     REQUEST_INTERVAL: int = int(os.getenv("REQUEST_INTERVAL"))
+    VERBOSE_SQL_LOGGING: bool = os.getenv("VERBOSE_SQL_LOGGING").lower() == "true"

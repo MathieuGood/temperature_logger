@@ -13,10 +13,10 @@ from models.record import Record
 from sqlalchemy.orm import Session
 
 
-def build_header(
+def build_headers(
     secret: str = Config.SECRET_KEY, token: str = Config.TOKEN
 ) -> dict[str, str]:
-    header = {}
+    headers = {}
     nonce = uuid.uuid4()
     t = int(round(time.time() * 1000))
     string_to_sign = "{}{}{}".format(token, t, nonce)
@@ -25,83 +25,83 @@ def build_header(
     sign = base64.b64encode(
         hmac.new(secret, msg=string_to_sign, digestmod=hashlib.sha256).digest()
     )
-    header["Authorization"] = token
-    header["Content-Type"] = "application/json"
-    header["charset"] = "utf8"
-    header["t"] = str(t)
-    header["sign"] = str(sign, "utf-8")
-    header["nonce"] = str(nonce)
-    return header
+    headers["Authorization"] = token
+    headers["Content-Type"] = "application/json"
+    headers["charset"] = "utf8"
+    headers["t"] = str(t)
+    headers["sign"] = str(sign, "utf-8")
+    headers["nonce"] = str(nonce)
+    return headers
 
 
-def switchbot_api_request(url, header):
-    response = requests.get(url, headers=header)
-    if response.status_code == 200:
-        return response.json()
-    else:
-        print(f"Error: {response.status_code}")
-        print(response.text)
-        print(response)
-        response_message = (
-            response.text.replace("{", "").replace("}", "").replace('"', "")
-        )
-        error_message = f"Error:{response.status_code} {response_message}"
-        print(error_message)
+def switchbot_api_request(url) -> dict | None:
+    response = requests.get(url, headers=build_headers())
+    if response.status_code not in [100, 200]:
+        print(f"Error in API request {url}. Response : {response}")
+        return None
+    return response.json()
 
 
-def get_devices(header) -> dict[str, str]:
+def get_devices() -> dict[str, str]:
     device_list_url = "https://api.switch-bot.com/v1.0/devices"
-    response_devices = switchbot_api_request(device_list_url, header)
+    response = switchbot_api_request(device_list_url)
+    if not response:
+        return None
     devices = {
         device["deviceId"]: device["deviceName"]
-        for device in response_devices["body"]["deviceList"]
+        for device in response["body"]["deviceList"]
     }
-
+    print(f"Found devices {devices}")
     return devices
 
 
-def get_device_record(device_id, header) -> Record:
+def get_device_record(device_id) -> Record | None:
     request_url = "https://api.switch-bot.com/v1.1/devices/" + device_id + "/status/"
-    response = switchbot_api_request(request_url, header)
+    response = switchbot_api_request(request_url)
+    if not response:
+        return None
+
     temperature: str = response["body"]["temperature"]
     humidity: str = response["body"]["humidity"]
     return Record(
         device_id=device_id,
-        # timestamp=datetime.now(),
         temperature=temperature,
         humidity=humidity,
     )
 
 
-def update_devices(devices: dict[str, str], session: Session, header: dict[str, str]):
+def update_devices(devices: dict[str, str], session: Session):
     for device_info in devices:
         device = Device(id=device_info, name=devices[device_info])
         if not session.query(Device).filter_by(id=device.id).first():
             session.add(device)
-            print(f"Adding device: {device}")
+            print(f"Adding {device}")
     session.commit()
     session.close()
 
 
-def get_and_write_records(devices, header, session):
+def get_and_write_records(devices, session):
     timestamp = datetime.now()
     for device_id in devices:
-        device_record = get_device_record(device_id, header)
+        device_record: Record | None = get_device_record(device_id)
+        if not device_record:
+            continue
         device_record.timestamp = timestamp
         session.add(device_record)
-    session.commit()
+        session.commit()
+        print(f"--> Adding {device_record}")
     session.close()
 
 
 def main():
-    header = build_header()
     session = get_session()
 
-    devices = get_devices(header)
-    update_devices(devices, session, header)
+    devices = get_devices()
+    update_devices(devices, session)
 
     while True:
-        get_and_write_records(devices, header, session)
+        print(f"{datetime.now()} Requesting data")
+        get_and_write_records(devices, session)
         time.sleep(Config.REQUEST_INTERVAL)
 
 
