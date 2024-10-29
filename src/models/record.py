@@ -15,7 +15,7 @@ class Record(Base):
     device: Mapped["Device"] = relationship("Device", back_populates="records")
 
     def __repr__(self) -> str:
-        return f"Record(id={self.id}, device_id={self.device_id}, temperature={self.temperature}, humidity={self.humidity})"
+        return f"Record(id={self.id}, timestamp={self.timestamp}, device_id={self.device_id}, temperature={self.temperature}°C, humidity={self.humidity}%)"
 
 
 from models.device import Device
