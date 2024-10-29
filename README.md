@@ -8,6 +8,7 @@ This Python app logs temperature and humidity data from a Switchbot sensors to a
 
 Instructions to get API key and token are in [Switchbot API Documentation](https://github.com/OpenWonderLabs/SwitchBotAPI)
 
+![App running](doc/temperature_logger_animation.gif)
 
 ## How to use
 
