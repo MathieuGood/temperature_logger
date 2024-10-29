@@ -65,10 +65,15 @@ def get_device_record(device_id, header) -> Record:
     response = switchbot_api_request(request_url, header)
     temperature: str = response["body"]["temperature"]
     humidity: str = response["body"]["humidity"]
-    return Record(device_id=device_id, timestamp=datetime.now(), temperature=temperature, humidity=humidity)
+    return Record(
+        device_id=device_id,
+        # timestamp=datetime.now(),
+        temperature=temperature,
+        humidity=humidity,
+    )
 
 
-def update_devices(devices: dict[str, str], session : Session, header : dict[str, str]):
+def update_devices(devices: dict[str, str], session: Session, header: dict[str, str]):
     for device_info in devices:
         device = Device(id=device_info, name=devices[device_info])
         if not session.query(Device).filter_by(id=device.id).first():
@@ -77,6 +82,17 @@ def update_devices(devices: dict[str, str], session : Session, header : dict[str
     session.commit()
     session.close()
 
+
+def get_and_write_records(devices, header, session):
+    timestamp = datetime.now()
+    for device_id in devices:
+        device_record = get_device_record(device_id, header)
+        device_record.timestamp = timestamp
+        session.add(device_record)
+    session.commit()
+    session.close()
+
+
 def main():
     header = build_header()
     session = get_session()
@@ -84,13 +100,9 @@ def main():
     devices = get_devices(header)
     update_devices(devices, session, header)
 
-
-    for device_id in devices:
-        device_record = get_device_record(device_id, header)
-        session.add(device_record)
-
-    session.commit()
-    session.close()
+    while True:
+        get_and_write_records(devices, header, session)
+        time.sleep(60)
 
 
 if __name__ == "__main__":
