@@ -10,4 +10,4 @@ class Config:
     TEST_DATABASE_URI: str = os.getenv("TEST_DATABASE_URI")
     SECRET_KEY: str = os.getenv("SECRET_KEY")
     TOKEN: str = os.getenv("TOKEN")
-    DEVICES : dict[str, str] = json.loads(os.getenv("DEVICES"))
+    REQUEST_INTERVAL: int = int(os.getenv("REQUEST_INTERVAL"))

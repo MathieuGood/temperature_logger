@@ -102,7 +102,7 @@ def main():
 
     while True:
         get_and_write_records(devices, header, session)
-        time.sleep(60)
+        time.sleep(Config.REQUEST_INTERVAL)
 
 
 if __name__ == "__main__":
