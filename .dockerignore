@@ -1,0 +1,9 @@
+.env
+docker_images
+doc
+venv
+.dockerignore
+Dockerfile
+notes.md
+.git
+.gitignore
