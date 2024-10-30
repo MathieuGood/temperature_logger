@@ -55,3 +55,21 @@ python src/main.py
 ```
 
 
+## Create a docker image
+
+Containerizing the app is a handy way to deploy it on a server. Do not forget to provide the required environment variables in the `docker run` command.
+
+1. Build the image
+
+```bash
+# For Synology NAS
+docker buildx build --platform linux/amd64 -t temperature_logger:latest .
+# For current platform
+docker build -t temperature_logger .
+```
+
+2. Save it to a tar file
+
+```bash
+docker save -o docker_images/temp-logger.tar temperature_logger:latest
+```
