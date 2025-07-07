@@ -107,6 +107,9 @@ def main():
             fetch_and_save_records(devices, session)
         except Exception as e:
             print(f"Error :\n{e}")
+            if "Response[429]" in str(e):
+                print("Too many requests, waiting 5 minutes before retrying")
+                time.sleep(300)
 
         time.sleep(Config.REQUEST_INTERVAL)
 
