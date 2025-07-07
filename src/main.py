@@ -1,4 +1,3 @@
-import sys
 import time
 import hashlib
 import hmac
@@ -21,9 +20,9 @@ def build_headers(
     t = int(round(time.time() * 1000))
     string_to_sign = "{}{}{}".format(token, t, nonce)
     string_to_sign = bytes(string_to_sign, "utf-8")
-    secret = bytes(secret, "utf-8")
+    secret_bytes = bytes(secret, "utf-8")
     sign = base64.b64encode(
-        hmac.new(secret, msg=string_to_sign, digestmod=hashlib.sha256).digest()
+        hmac.new(secret_bytes, msg=string_to_sign, digestmod=hashlib.sha256).digest()
     )
     headers["Authorization"] = token
     headers["Content-Type"] = "application/json"
@@ -42,7 +41,7 @@ def switchbot_api_request(url) -> dict | None:
     return response.json()
 
 
-def get_devices() -> dict[str, str]:
+def get_devices() -> dict[str, str] | None:
     device_list_url = "https://api.switch-bot.com/v1.0/devices"
     response = switchbot_api_request(device_list_url)
     if not response:
@@ -55,7 +54,7 @@ def get_devices() -> dict[str, str]:
     return devices
 
 
-def get_device_record(device_id) -> Record | None:
+def fetch_device_record(device_id) -> Record | None:
     request_url = "https://api.switch-bot.com/v1.1/devices/" + device_id + "/status/"
     response = switchbot_api_request(request_url)
     if not response:
@@ -70,7 +69,7 @@ def get_device_record(device_id) -> Record | None:
     )
 
 
-def update_devices(devices: dict[str, str], session: Session):
+def add_devices_to_session(devices: dict[str, str], session: Session):
     for device_info in devices:
         device = Device(id=device_info, name=devices[device_info])
         if not session.query(Device).filter_by(id=device.id).first():
@@ -80,10 +79,10 @@ def update_devices(devices: dict[str, str], session: Session):
     session.close()
 
 
-def get_and_write_records(devices, session):
+def fetch_and_save_records(devices, session):
     timestamp = datetime.now()
     for device_id in devices:
-        device_record: Record | None = get_device_record(device_id)
+        device_record: Record | None = fetch_device_record(device_id)
         if not device_record:
             continue
         device_record.timestamp = timestamp
@@ -95,13 +94,20 @@ def get_and_write_records(devices, session):
 
 def main():
     session = get_session()
-
     devices = get_devices()
-    update_devices(devices, session)
+
+    if not devices:
+        return
+
+    add_devices_to_session(devices, session)
 
     while True:
         print(f"{datetime.now()} Requesting data")
-        get_and_write_records(devices, session)
+        try:
+            fetch_and_save_records(devices, session)
+        except Exception as e:
+            print(f"Error :\n{e}")
+
         time.sleep(Config.REQUEST_INTERVAL)
 
 
